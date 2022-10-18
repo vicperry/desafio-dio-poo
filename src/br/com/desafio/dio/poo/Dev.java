@@ -2,18 +2,32 @@ package br.com.desafio.dio.poo;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public class Dev {
 	private String nome;
-	private Set<Conteudo> conteudosConluidos = new LinkedHashSet<>();
+	private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
 	private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
 
-	public void inscreverBootcamp(Bootcamp bootcamp) {}
+	public void inscreverBootcamp(Bootcamp bootcamp) {
+		this.conteudosInscritos.addAll(bootcamp.getConteudos());
+		bootcamp.getDevsInscritos().add(this);
+		}
 	
-	public void progredir() {}
+	public void progredir() {
+		Optional<Conteudo> conteudo = this.conteudosInscritos.stream().findFirst();
+		if(conteudo.isPresent()) {
+			this.conteudosConcluidos.add(conteudo.get());
+			this.conteudosInscritos.remove(conteudo.get());
+		}else {
+			System.err.println("Você não está matriculado em nenhum conteúdo.");
+		}
+	}
 	
-	public void calcularXp() {}
+	public double calcularXp() {
+		return this.conteudosConcluidos.stream().mapToDouble(conteudo -> conteudo.calcularXp()).sum();
+	}
 
 	public String getNome() {
 		return nome;
@@ -23,12 +37,12 @@ public class Dev {
 		this.nome = nome;
 	}
 
-	public Set<Conteudo> getConteudosConluidos() {
-		return conteudosConluidos;
+	public Set<Conteudo> getConteudosConcluidos() {
+		return conteudosConcluidos;
 	}
 
 	public void setConteudosConluidos(Set<Conteudo> conteudosConluidos) {
-		this.conteudosConluidos = conteudosConluidos;
+		this.conteudosConcluidos = conteudosConluidos;
 	}
 
 	public Set<Conteudo> getConteudosInscritos() {
@@ -41,7 +55,7 @@ public class Dev {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(conteudosConluidos, conteudosInscritos, nome);
+		return Objects.hash(conteudosConcluidos, conteudosInscritos, nome);
 	}
 
 	@Override
@@ -53,7 +67,7 @@ public class Dev {
 		if (getClass() != obj.getClass())
 			return false;
 		Dev other = (Dev) obj;
-		return Objects.equals(conteudosConluidos, other.conteudosConluidos)
+		return Objects.equals(conteudosConcluidos, other.conteudosConcluidos)
 				&& Objects.equals(conteudosInscritos, other.conteudosInscritos) && Objects.equals(nome, other.nome);
 	}
 
